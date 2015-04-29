@@ -20,10 +20,11 @@ def compare_digest(hash_file, hash_string):
             buf = f.read(1024)
             m.update(buf)
         md = m.hexdigest()
-        if md == hash_string:
-            print('Digest matches.')
-        else:
-            print("Computed Digest: {0} does not match \nProvided Digest: {1}".format(md, hash_string))
+        return md == hash_string
+        # if md == hash_string:
+        #     print('Digest matches.')
+        # else:
+        #     print("Computed Digest: {0} does not match \nProvided Digest: {1}".format(md, hash_string))
 
 
 if __name__ == '__main__':
@@ -44,9 +45,15 @@ if __name__ == '__main__':
             for line in file_list:
                 hash_file, hash_string = line.split("\t")
                 print('---{0}---'.format(hash_file))
-                compare_digest(hash_file, hash_string)
+                if compare_digest(hash_file, hash_string):
+                    print('Digests match')
+                else:
+                    print("Digests do not match")
     else:
         if args['string'] is None:
             parser.print_usage()
             raise AttributeError('Must supply a string to compare against file digest.')
-        compare_digest(args['infile'], args['string'])
+        if compare_digest(args['infile'], args['string']):
+            print('Digests match')
+        else:
+            print("Digests do not match")
