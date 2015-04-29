@@ -20,7 +20,10 @@ def compare_digest(hash_file, hash_string):
             buf = f.read(1024)
             m.update(buf)
         md = m.hexdigest()
-        return md == hash_string
+        if md != hash_string:
+            return md
+        else:
+            return True
         # if md == hash_string:
         #     print('Digest matches.')
         # else:
@@ -30,7 +33,7 @@ def compare_digest(hash_file, hash_string):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__, prog='md5-check')
     parser.add_argument('-l', '--list', action='store_true',
-                        help='infile is instead a list of file names and their expected md5 checksums')
+                        help='infile is instead a tab-delimited list of file names and their expected md5 checksums')
     parser.add_argument('infile', help='infile is used to digest ')
     parser.add_argument('string', nargs='?',
                         help='a string to compare against the file digest '
@@ -45,15 +48,19 @@ if __name__ == '__main__':
             for line in file_list:
                 hash_file, hash_string = line.split("\t")
                 print('---{0}---'.format(hash_file))
-                if compare_digest(hash_file, hash_string):
+                result = compare_digest(hash_file, hash_string.strip())
+                if result is True:
                     print('Digests match')
                 else:
-                    print("Digests do not match")
+                    print("Computed digest {0} does not match \n"
+                          "provided digest {1}".format(result, hash_string.strip()))
     else:
         if args['string'] is None:
             parser.print_usage()
             raise AttributeError('Must supply a string to compare against file digest.')
-        if compare_digest(args['infile'], args['string']):
-            print('Digests match')
-        else:
-            print("Digests do not match")
+            result = compare_digest(hash_file, hash_string)
+            if result is True:
+                print('Digests match')
+            else:
+                print("Computed digest {0} does not match \n"
+                      "provided digest {1}".format(result, hash_string))
