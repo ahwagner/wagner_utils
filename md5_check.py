@@ -8,7 +8,6 @@ __author__ = 'Alex H Wagner'
 
 import hashlib
 import argparse
-import os
 
 
 def compare_digest(hash_file, hash_string):
@@ -24,10 +23,6 @@ def compare_digest(hash_file, hash_string):
             return md
         else:
             return True
-        # if md == hash_string:
-        #     print('Digest matches.')
-        # else:
-        #     print("Computed Digest: {0} does not match \nProvided Digest: {1}".format(md, hash_string))
 
 
 if __name__ == '__main__':
