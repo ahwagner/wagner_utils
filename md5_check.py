@@ -8,26 +8,32 @@ __author__ = 'Alex H Wagner'
 
 import hashlib
 import argparse
+import os
 
 
 def compare_digest(hash_file, hash_string):
-    m = hashlib.md5
-    with open(hash_file, 'b') as f:
-        m.update(f)
+    m = hashlib.md5()
+    with open(hash_file, 'rb') as f:
+        buf = f.read(1024)
+        m.update(buf)
+        while buf:
+            buf = f.read(1024)
+            m.update(buf)
         md = m.hexdigest()
         if md == hash_string:
             print('Digest matches.')
         else:
-            print('Digest %s does not match %s.'.format(md, hash_string))
+            print("Computed Digest: {0} does not match \nProvided Digest: {1}".format(md, hash_string))
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__, prog='md5-check')
     parser.add_argument('-l', '--list', action='store_true',
-                        help='infile is a list of file names and their expected md5 checksums')
-    parser.add_argument('infile')
+                        help='infile is instead a list of file names and their expected md5 checksums')
+    parser.add_argument('infile', help='infile is used to digest ')
     parser.add_argument('string', nargs='?',
-                        help='a string to compare against the file digest (mutually exclusive with -l)')
+                        help='a string to compare against the file digest '
+                             '(omit when using --list flag)')
     args = vars(parser.parse_args())
 
     if args['list']:
@@ -37,12 +43,10 @@ if __name__ == '__main__':
         with open(args['infile']) as file_list:
             for line in file_list:
                 hash_file, hash_string = line.split("\t")
-                print(hash_file + ': ', end="")
+                print('---{0}---'.format(hash_file))
                 compare_digest(hash_file, hash_string)
     else:
         if args['string'] is None:
             parser.print_usage()
             raise AttributeError('Must supply a string to compare against file digest.')
-
-    if args['list'] and args['string']:
         compare_digest(args['infile'], args['string'])
