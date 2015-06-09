@@ -53,9 +53,9 @@ if __name__ == '__main__':
         if args['string'] is None:
             parser.print_usage()
             raise AttributeError('Must supply a string to compare against file digest.')
-            result = compare_digest(hash_file, hash_string)
-            if result is True:
-                print('Digests match')
-            else:
-                print("Computed digest {0} does not match \n"
-                      "provided digest {1}".format(result, hash_string))
+        result = compare_digest(args['infile'], args['string'])
+        if result is True:
+            print('Digests match')
+        else:
+            print("Computed digest {0} does not match \n"
+                  "provided digest {1}".format(result, args['string']))
